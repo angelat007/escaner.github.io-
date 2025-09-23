@@ -26,7 +26,7 @@ body {
 }
 
 .logo-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #d8d8d8 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -376,6 +376,10 @@ body {
 }
 
 @media (max-width: 768px) {
+    .logo-img {
+        width: 200px;
+    }
+
     .logo-section {
         font-size: 18px;
     }
@@ -436,6 +440,10 @@ body {
     .app-container {
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 0.8fr 1.2fr;
+    }
+
+    .logo-img {
+        width: 150px;
     }
 
     .logo-section {
