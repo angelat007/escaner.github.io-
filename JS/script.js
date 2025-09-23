@@ -19,6 +19,8 @@ const productDatabase = {
 let stream = null;
 let isScanning = false;
 let countdownInterval = null;
+let lastScannedCode = null;
+let scanCooldown = false;
 
 const video = document.getElementById('video');
 const startBtn = document.getElementById('startBtn');
@@ -61,9 +63,22 @@ function hideProductPopup() {
     productPopup.classList.remove('show');
 }
 
-// Función para buscar producto
+// Función para buscar producto con cooldown
 function searchProduct(barcode) {
     const cleanBarcode = barcode.replace(/\s+/g, '');
+
+    // Evitar escaneos múltiples del mismo código
+    if (scanCooldown || lastScannedCode === cleanBarcode) {
+        return false;
+    }
+
+    // Activar cooldown por 3 segundos
+    scanCooldown = true;
+    lastScannedCode = cleanBarcode;
+
+    setTimeout(() => {
+        scanCooldown = false;
+    }, 3000);
 
     if (productDatabase[cleanBarcode]) {
         showStatus(`✅ Producto encontrado: ${productDatabase[cleanBarcode].name}`, 'success');
@@ -91,82 +106,8 @@ function showStatus(message, type) {
     }, 3000);
 }
 
-// Iniciar cámara
-startBtn.addEventListener('click', async () => {
-    try {
-        showStatus('🔄 Iniciando cámara...', 'success');
-
-        stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-                facingMode: 'environment',
-                width: { ideal: 1280 },
-                height: { ideal: 720 }
-            }
-        });
-
-        video.srcObject = stream;
-        video.style.display = 'block';
-        noCameraMessage.style.display = 'none';
-
-        // Inicializar Quagga para escaneo
-        Quagga.init({
-            inputStream: {
-                name: "Live",
-                type: "LiveStream",
-                target: video,
-                constraints: {
-                    width: { min: 640, ideal: 1280 },
-                    height: { min: 480, ideal: 720 },
-                    facingMode: "environment"
-                }
-            },
-            locator: {
-                patchSize: "medium",
-                halfSample: true
-            },
-            numOfWorkers: 2,
-            frequency: 10,
-            decoder: {
-                readers: [
-                    "code_128_reader",
-                    "ean_reader",
-                    "ean_8_reader",
-                    "code_39_reader",
-                    "code_39_vin_reader",
-                    "codabar_reader",
-                    "upc_reader",
-                    "upc_e_reader"
-                ]
-            },
-            locate: true
-        }, (err) => {
-            if (err) {
-                console.error('Error al inicializar Quagga:', err);
-                showStatus('❌ Error al inicializar el escáner', 'error');
-                return;
-            }
-
-            Quagga.start();
-            isScanning = true;
-            startBtn.disabled = true;
-            stopBtn.disabled = false;
-            showStatus('📷 Cámara activa - Apunta al código de barras', 'success');
-        });
-
-        // Detectar códigos de barras
-        Quagga.onDetected((data) => {
-            if (isScanning) {
-                const barcode = data.codeResult.code;
-                console.log('Código detectado:', barcode);
-                searchProduct(barcode);
-            }
-        });
-
-    } catch (error) {
-        console.error('Error al acceder a la cámara:', error);
-        showStatus('❌ Error al acceder a la cámara. Verifica los permisos.', 'error');
-    }
-});
+// Iniciar cámara manualmente (solo si falló la automática)
+startBtn.addEventListener('click', initializeCamera);
 
 // Detener cámara
 stopBtn.addEventListener('click', () => {
@@ -180,9 +121,18 @@ stopBtn.addEventListener('click', () => {
         isScanning = false;
     }
 
+    // Reset variables
+    lastScannedCode = null;
+    scanCooldown = false;
+
     video.srcObject = null;
     video.style.display = 'none';
     noCameraMessage.style.display = 'block';
+    noCameraMessage.innerHTML = `
+                <div class="no-camera-icon">📷</div>
+                <div>Cámara detenida</div>
+                <div style="font-size: 14px; margin-top: 10px;">Toca "Activar Cámara" para continuar</div>
+            `;
     startBtn.disabled = false;
     stopBtn.disabled = true;
     showStatus('⏹️ Cámara detenida', 'success');
@@ -210,9 +160,10 @@ setInterval(() => {
     document.querySelector('.ads-price').textContent = ad.price;
 }, 5000);
 
-// Mostrar códigos de ejemplo al cargar
+// Inicializar automáticamente al cargar la página
 window.addEventListener('load', () => {
+    // Pequeño delay para asegurar que todos los elementos estén cargados
     setTimeout(() => {
-        showStatus('📷 Activa la cámara para comenzar a escanear códigos de barras', 'success');
-    }, 2000);
+        initializeCamera();
+    }, 500);
 });

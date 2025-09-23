@@ -1,3 +1,90 @@
+<script>
+// Función para inicializar la cámara automáticamente
+        async function initializeCamera() {
+            try {
+                showStatus('🔄 Iniciando cámara...', 'success');
+                
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { 
+                        facingMode: 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                });
+                
+                video.srcObject = stream;
+                video.style.display = 'block';
+                noCameraMessage.style.display = 'none';
+                
+                // Esperar a que el video esté listo
+                video.addEventListener('loadedmetadata', () => {
+                    // Inicializar Quagga para escaneo
+                    Quagga.init({
+                        inputStream: {
+                            name: "Live",
+                            type: "LiveStream",
+                            target: video,
+                            constraints: {
+                                width: { min: 640, ideal: 1280 },
+                                height: { min: 480, ideal: 720 },
+                                facingMode: "environment"
+                            }
+                        },
+                        locator: {
+                            patchSize: "medium",
+                            halfSample: true
+                        },
+                        numOfWorkers: 2,
+                        frequency: 10,
+                        decoder: {
+                            readers: [
+                                "code_128_reader",
+                                "ean_reader",
+                                "ean_8_reader",
+                                "code_39_reader",
+                                "code_39_vin_reader",
+                                "codabar_reader",
+                                "upc_reader",
+                                "upc_e_reader"
+                            ]
+                        },
+                        locate: true
+                    }, (err) => {
+                        if (err) {
+                            console.error('Error al inicializar Quagga:', err);
+                            showStatus('❌ Error al inicializar el escáner', 'error');
+                            return;
+                        }
+                        
+                        Quagga.start();
+                        isScanning = true;
+                        startBtn.disabled = true;
+                        stopBtn.disabled = false;
+                        showStatus('📷 Listo para escanear códigos', 'success');
+                    });
+                });
+                
+                // Detectar códigos de barras con control de duplicados
+                Quagga.onDetected((data) => {
+                    if (isScanning && !scanCooldown) {
+                        const barcode = data.codeResult.code;
+                        console.log('Código detectado:', barcode);
+                        searchProduct(barcode);
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Error al acceder a la cámara:', error);
+                showStatus('❌ Error al acceder a la cámara', 'error');
+                noCameraMessage.innerHTML = `
+                    <div class="no-camera-icon">📷</div>
+                    <div>Error al acceder a la cámara</div>
+                    <div style="font-size: 14px; margin-top: 10px;">Toca "Activar Cámara" para intentar de nuevo</div>
+                `;
+                startBtn.disabled = false;
+            }
+        }
+        </script>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,13 +92,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="CSS/styles.css">
     <title>Verificador de Precios</title>
+
 </head>
 <body>
     <div class="app-container">
         <!-- Sección del Logo -->
         <div class="logo-section">
             <div class="logo-content">
-                <span class="logo-icon"><img src="IMG/Log-super-plaza-venezuela_2.webp" width="500"></span>
+                <span class="logo-icon">🏪</span>
+                <div>SUPER MARKET</div>
+                <div style="font-size: 14px; opacity: 0.9; margin-top: 5px;">Tu tienda de confianza</div>
             </div>
         </div>
 
@@ -31,7 +121,7 @@
                 <video id="video" autoplay playsinline style="display: none;"></video>
                 <div class="no-camera-message" id="noCameraMessage">
                     <div class="no-camera-icon">📷</div>
-                    <div>Toca "Activar Cámara" para comenzar a escanear</div>
+                    <div>Iniciando cámara...</div>
                 </div>
                 
                 <div class="camera-overlay">
@@ -40,8 +130,6 @@
                     </div>
                 </div>
             </div>
-
-
 
             <!-- Controles de cámara -->
             <div class="camera-controls">
@@ -63,6 +151,6 @@
     <div id="status" class="status" style="display: none;"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
-<script src="JS/script.js"></script>
+    <script src="JS/script.js"></script>
 </body>
 </html>
