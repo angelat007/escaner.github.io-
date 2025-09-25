@@ -32,17 +32,15 @@ const noCameraMessage = document.getElementById('noCameraMessage');
 
 // Función para mostrar el popup del producto con countdown
 function showProductPopup(barcode, product) {
-    safeSetTextById('productName', product.name);
-    safeSetTextById('productPrice', `$${product.price.toFixed(2)}`);
-    safeSetTextById('productBarcode', `Código: ${barcode}`);
+    document.getElementById('productName').textContent = product.name;
     document.getElementById('productPrice').textContent = `$${product.price.toFixed(2)}`;
     document.getElementById('productBarcode').textContent = `Código: ${barcode}`;
 
     popupOverlay.classList.add('show');
     productPopup.classList.add('show');
 
-    // Countdown de 4 segundos
-    let countdown = 4;
+    // Countdown de 1 segundos
+    let countdown = 1;
     const countdownElement = document.getElementById('countdown');
 
     countdownInterval = setInterval(() => {
@@ -74,16 +72,16 @@ function searchProduct(barcode) {
         return false;
     }
 
-    // Activar cooldown por 3 segundos
+    // Activar cooldown por 2 segundos
     scanCooldown = true;
     lastScannedCode = cleanBarcode;
 
     setTimeout(() => {
         scanCooldown = false;
-    }, 3000);
+    }, 2000);
 
     if (productDatabase[cleanBarcode]) {
-        showStatus(`<i class="fas fa-check-circle"></i> Producto encontrado: ${productDatabase[cleanBarcode].name}`, 'success');
+        showStatus(`✅ Producto encontrado: ${productDatabase[cleanBarcode].name}`, 'success');
         showProductPopup(cleanBarcode, productDatabase[cleanBarcode]);
 
         // Vibrar el dispositivo si está disponible
@@ -93,13 +91,13 @@ function searchProduct(barcode) {
 
         return true;
     } else {
-        showStatus('<i class="fas fa-times-circle"></i> Producto no encontrado en la base de datos', 'error');
+        showStatus('❌ Producto no encontrado en la base de datos', 'error');
         return false;
     }
 }
 
 function showStatus(message, type) {
-    status.innerHTML = message;
+    status.textContent = message;
     status.className = `status ${type}`;
     status.style.display = 'block';
 
@@ -131,31 +129,33 @@ stopBtn.addEventListener('click', () => {
     video.style.display = 'none';
     noCameraMessage.style.display = 'block';
     noCameraMessage.innerHTML = `
-                <div class="no-camera-icon"><i class="fa-solid fa-camera-slash"></i></div>
+                <div class="no-camera-icon">📷</div>
                 <div>Cámara detenida</div>
-                <div style="font-size: 14px; margin-top: 10px;">Toca "<i class='fas fa-play-circle'></i> Activar Cámara" para continuar</div>
+                <div style="font-size: 14px; margin-top: 10px;">Toca "Activar Cámara" para continuar</div>
             `;
     startBtn.disabled = false;
     stopBtn.disabled = true;
-    showStatus('<i class="fas fa-stop-circle"></i> Cámara detenida', 'success');
+    showStatus('⏹️ Cámara detenida', 'success');
 });
+
+
 
 // Cerrar popup al hacer clic en overlay
 popupOverlay.addEventListener('click', hideProductPopup);
 
 // Rotar publicidad cada 5 segundos
 const ads = [
-    { banner: '<i class="fas fa-bullhorn"></i> ¡OFERTA!', text: 'Coca Cola 2L', price: '$35.99' },
-    { banner: '<i class="fas fa-clock"></i> HOY SOLO', text: 'Pan Bimbo', price: '$35.00' },
-    { banner: '<i class="fas fa-tags"></i> PROMOCIÓN', text: 'Sandías 2x1', price: '$159.00' },
-    { banner: '<i class="fas fa-star"></i> ESPECIAL', text: 'Café Nescafé', price: '$89.00' }
+    { banner: '🎯 ¡OFERTA!', text: 'Coca Cola 2L', price: '$35.99' },
+    { banner: '🔥 HOY SOLO', text: 'Pan Bimbo', price: '$35.00' },
+    { banner: '💥 PROMOCIÓN', text: 'Sabritas 2x1', price: '$18.00' },
+    { banner: '⭐ ESPECIAL', text: 'Café Nescafé', price: '$89.00' }
 ];
 
 let currentAdIndex = 0;
 setInterval(() => {
     currentAdIndex = (currentAdIndex + 1) % ads.length;
     const ad = ads[currentAdIndex];
-    document.querySelector('.ads-banner').innerHTML = ad.banner;
+    document.querySelector('.ads-banner').textContent = ad.banner;
     document.querySelector('.ads-text').textContent = ad.text;
     document.querySelector('.ads-price').textContent = ad.price;
 }, 5000);
@@ -165,5 +165,5 @@ window.addEventListener('load', () => {
     // Pequeño delay para asegurar que todos los elementos estén cargados
     setTimeout(() => {
         initializeCamera();
-    }, 400);
+    }, 500);
 });
