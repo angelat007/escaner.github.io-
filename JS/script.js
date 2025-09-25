@@ -32,9 +32,9 @@ const noCameraMessage = document.getElementById('noCameraMessage');
 
 // Función para mostrar el popup del producto con countdown
 function showProductPopup(barcode, product) {
-    safeSetTextById('productName', product.name);
-    safeSetTextById('productPrice', `$${product.price.toFixed(2)}`);
-    safeSetTextById('productBarcode', `Código: ${barcode}`);
+    document.getElementById('productName').innerHTML = `<i class="fas fa-box-open"></i> ${product.name}`;
+    document.getElementById('productPrice').innerHTML = `<i class="fas fa-tag"></i> $${product.price.toFixed(2)}`;
+    document.getElementById('productBarcode').innerHTML = `<i class="fas fa-barcode"></i> Código: ${barcode}`;
 
     popupOverlay.classList.add('show');
     productPopup.classList.add('show');
@@ -166,3 +166,4 @@ window.addEventListener('load', () => {
     }, 400);
 
 });
+
