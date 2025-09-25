@@ -1,19 +1,19 @@
 // Base de datos de productos expandida
 const productDatabase = {
-    '7501234567890': { name: 'Coca Cola 600ml', price: 25.50 },
-    '7501234567891': { name: 'Pepsi 600ml', price: 24.00 },
-    '7501234567892': { name: 'Sabritas Originales 45g', price: 18.00 },
-    '7501234567893': { name: 'Leche Lala 1L', price: 22.50 },
-    '7501234567894': { name: 'Pan Bimbo Blanco Grande', price: 35.00 },
-    '7501234567895': { name: 'Café Nescafé Clásico 200g', price: 89.00 },
-    '7501234567896': { name: 'Coca Cola 2L', price: 35.99 },
-    '7501234567897': { name: 'Agua Ciel 1.5L', price: 12.00 },
-    '7501234567898': { name: 'Galletas Oreo 154g', price: 28.50 },
-    '7501234567899': { name: 'Cerveza Corona 355ml', price: 22.00 },
+    '7501234567890': { name: 'Coca Cola 600ml', price: 25 },
+    '7501234567891': { name: 'Pepsi 600ml', price: 24 },
+    '7501234567892': { name: 'Sabritas Originales 45g', price: 18 },
+    '7501234567893': { name: 'Leche Lala 1L', price: 22 },
+    '7501234567894': { name: 'Pan Bimbo Blanco Grande', price: 35 },
+    '7501234567895': { name: 'Café Nescafé Clásico 200g', price: 89 },
+    '7501234567896': { name: 'Coca Cola 2L', price: 35 },
+    '7501234567897': { name: 'Agua Ciel 1.5L', price: 12 },
+    '7501234567898': { name: 'Galletas Oreo 154g', price: 28 },
+    '7501234567899': { name: 'Cerveza Corona 355ml', price: 22 },
     '1234567890123': { name: 'Producto de Prueba', price: 15.75 },
-    '9876543210987': { name: 'Detergente Ace 1kg', price: 45.00 },
-    '5432167890123': { name: 'Shampoo Pantene 400ml', price: 67.50 },
-    '1111111111111': { name: 'Test Product', price: 10.00 }
+    '9876543210987': { name: 'Detergente Ace 1kg', price: 45 },
+    '5432167890123': { name: 'Shampoo Pantene 400ml', price: 67 },
+    '1111111111111': { name: 'Test Product', price: 10 }
 };
 
 let stream = null;
