@@ -35,14 +35,12 @@ function showProductPopup(barcode, product) {
     safeSetTextById('productName', product.name);
     safeSetTextById('productPrice', `$${product.price.toFixed(2)}`);
     safeSetTextById('productBarcode', `Código: ${barcode}`);
-    document.getElementById('productPrice').textContent = `$${product.price.toFixed(2)}`;
-    document.getElementById('productBarcode').textContent = `Código: ${barcode}`;
 
     popupOverlay.classList.add('show');
     productPopup.classList.add('show');
 
-    // Countdown de 4 segundos
-    let countdown = 4;
+    // Countdown de 2 segundos
+    let countdown = 2;
     const countdownElement = document.getElementById('countdown');
 
     countdownInterval = setInterval(() => {
@@ -74,13 +72,13 @@ function searchProduct(barcode) {
         return false;
     }
 
-    // Activar cooldown por 3 segundos
+    // Activar cooldown por 2 segundos
     scanCooldown = true;
     lastScannedCode = cleanBarcode;
 
     setTimeout(() => {
         scanCooldown = false;
-    }, 3000);
+    }, 2000);
 
     if (productDatabase[cleanBarcode]) {
         showStatus(`<i class="fas fa-check-circle"></i> Producto encontrado: ${productDatabase[cleanBarcode].name}`, 'success');
@@ -105,7 +103,7 @@ function showStatus(message, type) {
 
     setTimeout(() => {
         status.style.display = 'none';
-    }, 3000);
+    }, 2000);
 }
 
 // Iniciar cámara manualmente (solo si falló la automática)
@@ -166,4 +164,5 @@ window.addEventListener('load', () => {
     setTimeout(() => {
         initializeCamera();
     }, 400);
+
 });
