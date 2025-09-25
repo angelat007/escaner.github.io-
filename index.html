@@ -1,154 +1,72 @@
-    <script>
-// Función para inicializar la cámara automáticamente
-        async function initializeCamera() {
-            try {
-                showStatus('🔄 Iniciando cámara...', 'success');
-                
-                stream = await navigator.mediaDevices.getUserMedia({
-                    video: { 
-                        facingMode: 'environment',
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    }
-                });
-                
-                video.srcObject = stream;
-                video.style.display = 'block';
-                noCameraMessage.style.display = 'none';
-                
-                // Esperar a que el video esté listo
-                video.addEventListener('loadedmetadata', () => {
-                    // Inicializar Quagga para escaneo
-                    Quagga.init({
-                        inputStream: {
-                            name: "Live",
-                            type: "LiveStream",
-                            target: video,
-                            constraints: {
-                                width: { min: 640, ideal: 1280 },
-                                height: { min: 480, ideal: 720 },
-                                facingMode: "environment"
-                            }
-                        },
-                        locator: {
-                            patchSize: "medium",
-                            halfSample: true
-                        },
-                        numOfWorkers: 2,
-                        frequency: 10,
-                        decoder: {
-                            readers: [
-                                "code_128_reader",
-                                "ean_reader",
-                                "ean_8_reader",
-                                "code_39_reader",
-                                "code_39_vin_reader",
-                                "codabar_reader",
-                                "upc_reader",
-                                "upc_e_reader"
-                            ]
-                        },
-                        locate: true
-                    }, (err) => {
-                        if (err) {
-                            console.error('Error al inicializar Quagga:', err);
-                            showStatus('❌ Error al inicializar el escáner', 'error');
-                            return;
-                        }
-                        
-                        Quagga.start();
-                        isScanning = true;
-                        startBtn.disabled = true;
-                        stopBtn.disabled = false;
-                        showStatus('📷 Listo para escanear códigos', 'success');
-                    });
-                });
-                
-                // Detectar códigos de barras con control de duplicados
-                Quagga.onDetected((data) => {
-                    if (isScanning && !scanCooldown) {
-                        const barcode = data.codeResult.code;
-                        console.log('Código detectado:', barcode);
-                        searchProduct(barcode);
-                    }
-                });
-                
-            } catch (error) {
-                console.error('Error al acceder a la cámara:', error);
-                showStatus('❌ Error al acceder a la cámara', 'error');
-                noCameraMessage.innerHTML = `
-                    <div class="no-camera-icon">📷</div>
-                    <div>Error al acceder a la cámara</div>
-                    <div style="font-size: 14px; margin-top: 10px;">Toca "Activar Cámara" para intentar de nuevo</div>
-                `;
-                startBtn.disabled = false;
-            }
-        }
-</script>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="CSS/styles.css">
-    <title>Verificador de Precios</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="CSS/styles.css">
+  <title>Verificador de Precios</title>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sección del Logo -->
-        <div class="logo-section">
-            <div class="logo-content">
-                <span class="logo-icon"><img src="IMG/Log-super-plaza-venezuela_2.webp" class="logo-img" alt="SCANER" width="600"></span>
-            </div>
-        </div>
-
-        <!-- Sección de Publicidad -->
-        <div class="ads-section">
-            <div class="ads-content">
-                <div class="ads-banner">🎯 ¡OFERTA!</div>
-                <div class="ads-text">Coca Cola 2L</div>
-                <div class="ads-price">$35.99</div>
-                <div style="font-size: 12px; margin-top: 5px; color: #666;">*Válido hasta agotar existencias</div>
-            </div>
-        </div>
-
-        <!-- Sección de la Cámara/Escáner -->
-        <div class="camera-section">
-            <div class="camera-container">
-                <video id="video" autoplay playsinline style="display: none;"></video>
-                <div class="no-camera-message" id="noCameraMessage">
-                    <div class="no-camera-icon">📷</div>
-                    <div>Iniciando cámara...</div>
-                </div>
-                
-                <div class="camera-overlay">
-                    <div class="scanner-frame">
-                        <div class="scan-line"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Controles de cámara -->
-            <div class="camera-controls">
-                <button class="control-btn" id="startBtn">📸 Activar Cámara</button>
-                <button class="control-btn" id="stopBtn" disabled>⏹️ Detener</button>
-            </div>
-        </div>
+  <div class="app-container">
+    <!-- Logo -->
+    <div class="logo-section">
+      <div class="logo-content">
+        <img src="IMG/Log-super-plaza-venezuela_2.webp" class="logo-img" alt="SCANER" width="600">
+      </div>
     </div>
 
-    <!-- Popup del producto -->
-    <div class="popup-overlay" id="popupOverlay"></div>
-    <div class="product-popup" id="productPopup">
-        <h2 id="productName">Nombre del Producto</h2>
-        <div class="price" id="productPrice">$0.00</div>
-        <div class="barcode" id="productBarcode">Código: 000000000000</div>
-        <div style="font-size: 12px; color: #95a5a6;">Se cerrará automáticamente en <span id="countdown">4</span> segundos</div>
+    <!-- Publicidad -->
+    <div class="ads-section">
+      <div class="ads-content">
+        <div class="ads-banner"><i class="fa-solid fa-bullhorn"></i> ¡OFERTA!</div>
+        <div class="ads-text">Coca Cola 2L</div>
+        <div class="ads-price">$35.99</div>
+        <div style="font-size: 12px; margin-top: 5px; color: #666;">*Válido hasta agotar existencias</div>
+      </div>
     </div>
 
-    <div id="status" class="status" style="display: none;"></div>
+    <!-- Cámara -->
+    <div class="camera-section">
+      <div class="camera-container">
+        <video id="video" autoplay playsinline style="display: none;"></video>
+        <div class="no-camera-message" id="noCameraMessage">
+          <div class="no-camera-icon"><i class="fa-solid fa-camera"></i></div>
+          <div>Iniciando cámara...</div>
+        </div>
+        
+        <div class="camera-overlay">
+          <div class="scanner-frame">
+            <div class="scan-line"></div>
+          </div>
+        </div>
+      </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
-    <script src="JS/script.js"></script>
+      <!-- Botones -->
+      <div class="camera-controls">
+        <button class="control-btn" id="startBtn"><i class="fa-solid fa-play"></i> Activar</button>
+        <button class="control-btn" id="stopBtn" disabled><i class="fa-solid fa-stop"></i> Detener</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup -->
+  <div class="popup-overlay" id="popupOverlay"></div>
+  <div class="product-popup" id="productPopup">
+    <h2 id="productName">Nombre del Producto</h2>
+    <div class="price" id="productPrice">$0.00</div>
+    <div class="barcode" id="productBarcode">Código: 000000000000</div>
+    <div style="font-size: 12px; color: #95a5a6;">
+      <i class="fa-solid fa-clock"></i> Se cerrará en <span id="countdown">4</span> s
+    </div>
+  </div>
+
+  <!-- Status -->
+  <div id="status" class="status" style="display: none;"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+  <script src="JS/script.js"></script>
 </body>
 </html>
