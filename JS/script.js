@@ -1,14 +1,15 @@
 // Producto base
 const productDatabase = {
-  '7501234567890': { name: 'Coca Cola 600ml', price: 25 },
-  '7501234567891': { name: 'Pepsi 600ml', price: 24 },
-  '7501234567892': { name: 'Sabritas Originales 45g', price: 18 },
-  '7501234567893': { name: 'Leche Lala 1L', price: 22 },
-  '7501234567894': { name: 'Pan Bimbo Blanco Grande', price: 35 },
-  '7501234567895': { name: 'Café Nescafé Clásico 200g', price: 89 },
-  '7501234567896': { name: 'Coca Cola 2L', price: 35 },
-  '9876543210987': { name: 'Detergente Ace 1kg', price: 45 },
-  '5432167890123': { name: 'Shampoo Pantene 400ml', price: 67 }
+  '74610630945': { name: 'Agua Cool Heaven', price: 10.00 },
+  '75012345678': { name: 'Coca Cola 600ml', price: 25.00 },
+  '75758833648': { name: 'Pepsi 600ml', price: 24.00 },
+  '75012489363': { name: 'Sabritas Originales 45g', price: 18.00 },
+  '75012345575': { name: 'Leche Lala 1L', price: 22.00 },
+  '75012345673': { name: 'Pan Bimbo Blanco Grande', price: 35.00 },
+  '75012345373': { name: 'Café Nescafé Clásico 200g', price: 89.99 },
+  '75012345657': { name: 'Coca Cola 2L', price: 35.00 },
+  '98765432100': { name: 'Detergente Ace 1kg', price: 45.00 },
+  '54321678901': { name: 'Shampoo Pantene 400ml', price: 67.89 }
 };
 
 let stream = null;
@@ -180,3 +181,4 @@ setInterval(() => {
 
 // Autoinicio cámara
 window.addEventListener('load', () => setTimeout(() => initializeCamera(), 500));
+
