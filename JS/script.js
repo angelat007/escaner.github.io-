@@ -1,6 +1,6 @@
 // Producto base
 const productDatabase = {
-  '74610630945': { name: 'Agua Cool Heaven', price: 10.00 },
+  '7 46 1063 094345': { name: 'Agua Cool Heaven', price: 10.00 },
   '75012345678': { name: 'Coca Cola 600ml', price: 25.00 },
   '75758833648': { name: 'Pepsi 600ml', price: 24.00 },
   '75012489363': { name: 'Sabritas Originales 45g', price: 18.00 },
@@ -181,4 +181,5 @@ setInterval(() => {
 
 // Autoinicio cámara
 window.addEventListener('load', () => setTimeout(() => initializeCamera(), 500));
+
 
